@@ -1,0 +1,5 @@
+#!/bin/sh
+# die IP Adresse von der Telekom aktualiseren
+cp /etc/hosts /var/backups/hosts && \
+sed -i -e "s/.*sip-trunk\.telekom\.de/`naptr2ip reg.sip-trunk.telekom.de`/g" /etc/hosts && \
+/bin/systemctl reload dnsmasq.service
