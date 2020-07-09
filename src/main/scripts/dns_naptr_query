@@ -1,0 +1,105 @@
+#!/usr/bin/env python
+"""
+This script returns the IPv4 addresses of a SIP Registrar with the lowest prio, 
+by performing a DNS NAPTR and DNS SRV Query 
+
+"""
+import sys
+import logging
+import dns.resolver
+
+
+debug = False
+#logging.basicConfig(stream=property.getter("logging_steam"), level=property.getter("logging_level"))
+
+def dnsNaptrQuery(name):
+    
+    qtype = 'NAPTR'
+    
+    try:
+        answer = dns.resolver.query(name, qtype, raise_on_no_answer=False)
+
+        res = []
+        for rdata in answer:
+            res.append(rdata.replacement)
+                
+        logging.debug("[+] NAPTR Response for %s: " % (name) +" "+str(res))
+        if res == []: logging.error("[!] The entered DNS Name contains no NAPTR Record!")
+        
+        return res
+
+    except:
+        raise Exception('[!] The entered DNS Name is empty or not valid!')
+
+
+
+def dnsSrvQuery(name):
+
+    qtype = 'SRV'
+    
+    try: 
+        answer = dns.resolver.query(name, qtype, raise_on_no_answer=False)
+    
+        res = []
+        prio = 200
+        rdata_prio = None
+        for rdata in answer:
+            if(rdata.priority < prio) :
+                prio = rdata.priority
+                rdata_prio = rdata
+                
+        res.append(rdata_prio.target)
+
+        logging.debug ("[+] SRV Response for %s: " %(name) +" " +str(res))
+        if res == []: logging.error ("[!] The entered DNS Name contains no SRV Record!")
+        return res
+    
+    except:
+        raise Exception("[!] The entered DNS Name is empty or not valid! ")
+
+
+
+def dnsArecordQuery(name):
+    
+    qtype = 'A'
+        
+    try:
+        answer = dns.resolver.query(name, qtype, raise_on_no_answer=False)
+        
+        res = []
+        
+        for rdata in answer:
+        
+                res.append(rdata.address)
+                logging.debug ("[+] A-Record Response for %s: " %(name) +" " +str(res))
+                if res == []: logging.error ("[!] The entered DNS Name contains no A Record!")
+
+        return res
+
+    except:
+        raise Exception("[!] The entered DNS Name is empty or not valid! ")
+
+
+
+def startQuery(name):
+
+    res = dnsNaptrQuery(name)
+
+    for naprt_res in res:
+        
+        if naprt_res.labels[0] == b'_sip':
+            srv_res = dnsSrvQuery(naprt_res)
+            for a_res in srv_res:
+                print(str(dnsArecordQuery(a_res)[0]))
+
+    
+
+if __name__ == '__main__':
+
+        if len(sys.argv) != 2 :
+            sys.stderr.write("missing argument name of SIP Registrar")
+            exit(2)
+        startQuery(sys.argv[1])
+        
+    
+
