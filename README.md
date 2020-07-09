@@ -1,5 +1,5 @@
 # dns_naptr_query
-This script returns the IPv4 addresses of a SIP Registrar with the lowest prio, , by performing a DNS NAPTR and DNS SRV query 
+This script returns the IPv4 address of a SIP Registrar with the lowest prio, by performing a DNS NAPTR and DNS SRV query 
 
 Prerequisite:
 
