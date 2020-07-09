@@ -90,7 +90,7 @@ def startQuery(name):
         if naprt_res.labels[0] == b'_sip':
             srv_res = dnsSrvQuery(naprt_res)
             for a_res in srv_res:
-                print(str(dnsArecordQuery(a_res)[0]))
+                print(str(dnsArecordQuery(a_res)[0]) + " " + name)
 
     
 

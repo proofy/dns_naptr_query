@@ -16,6 +16,7 @@ default_task = "publish"
 @init
 def initialize(project):
     project.build_depends_on("dnspython")
+    project.name = "naptr2ip"
     project.version = "0.1.20200709"
     project.set_property('logging_steam', 'sys.stderr')    
     project.set_property('logging_level', 'DEBUG')    
